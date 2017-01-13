@@ -12,7 +12,10 @@ import_config "../apps/*/config/config.exs"
 # Sample configuration (overrides the imported configuration above):
 #
 config :logger, :console,
-   level: :debug,
+   level: :warn,
    format: "$date $time [$level] $metadata :: $message\n",
    metadata: [:application, :module],
    compile_time_purge_level: :warn
+
+config :registration_service, ecto_repos: []
+config :user_manager, ecto_repos: []

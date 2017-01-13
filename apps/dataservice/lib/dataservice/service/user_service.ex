@@ -5,6 +5,7 @@ defmodule Dataservice.Service.UserService do
   import Ecto.Query
   alias Dataservice.Schema.User
   alias Dataservice.Repo
+  require Logger
 
   def start_link(state, opts) do
     GenServer.start_link(__MODULE__, state, opts)
@@ -58,9 +59,17 @@ defmodule Dataservice.Service.UserService do
   end
   def handle_call({:set_permissions, user, permissions}, _from, state) do
     import Ecto.Changeset
-    changeset = user |> User.changeset(%{}) |> put_assoc(:permissions, permissions)
+    p = Enum.map(permissions, fn x ->
+     Dataservice.Schema.Permission |> where(id: ^x.id) |> Repo.one! |> Repo.preload(:permission_group) |> Repo.preload(:users)
+     end)
+     Logger.debug "Loaded permissions: #{inspect p}"
+     u = User |> where(id: ^user.id) |> Repo.one! |> Repo.preload(:permissions)
+    changeset = u |> User.changeset(%{}) |> put_assoc(:permissions, p)
     case changeset.valid? do
-          true -> {:reply, Repo.update(changeset), state}
+          true ->
+          Logger.debug "update on change set: #{inspect changeset}"
+          {:ok, result} = Repo.update(changeset)
+          {:reply, Repo.update(changeset), state}
           false -> {:reply, {:error, changeset.errors}, state}
     end
   end

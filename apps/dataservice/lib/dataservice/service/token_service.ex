@@ -15,7 +15,7 @@ defmodule Dataservice.Service.TokenService do
     import Ecto.Changeset
     alias Dataservice.Schema.User
     token_user = User.changeset(token.user, %{})
-    changeset = Token.changeset(%Token{}, %{token: token.token, expire: token.expire,
+    changeset = %Token{} |> Token.changeset(%{token: token.token, expire: token.expire,
             issue: token.issue, issue_time: token.issue_time, subject: token.subject, token_type: token.token_type})
             |> put_assoc(:user, token_user)
     case changeset.valid? do

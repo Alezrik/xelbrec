@@ -6,6 +6,7 @@ defmodule Dataservice.Repo.Migrations.PermissionGroup do
       add :name, :string
       timestamps
     end
+    create unique_index(:permission_group, [:name])
 
     create table(:permission) do
       add :permission_tag, :string

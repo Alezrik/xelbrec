@@ -41,7 +41,7 @@ defmodule TokenServiceTest do
 
          {:ok, _byusertoken} = GenServer.call(TokenService, {:get_by_user, valid_user})
 
-         user2 = %User{name: "john", password: "fdsafdsa", email: "fdsa@fdsa"}
+         user2 = %User{name: "johnny", password: "fdsafdsa", email: "fdsaaaaa@fdsa"}
          {:ok, inserted_user2} = GenServer.call(UserService, {:insert, user2})
          {:ok, valid_user2} = GenServer.call(UserService, {:get, inserted_user2.id})
 

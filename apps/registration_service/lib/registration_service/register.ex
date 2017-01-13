@@ -18,7 +18,7 @@ defmodule RegistrationService.Register do
     case GenServer.call(UserService, {:insert, user}) do
         {:ok, inserted_user} ->
             Logger.debug "Inserted User: #{inspect inserted_user}"
-        {:reply, {:ok, %RegisterUserResponse{ is_registered: true}}, state}
+        {:reply, {:ok, %RegisterUserResponse{is_registered: true, registered_user: %ServiceObjects.User{name: inserted_user.name, id: inserted_user.id}}}, state}
         {:error, errors} ->
             Logger.debug "Errors: #{inspect errors}"
          {:reply, {:ok, %RegisterUserResponse{errors: errors}}, state}

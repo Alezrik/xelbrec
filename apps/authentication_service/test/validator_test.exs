@@ -24,15 +24,15 @@ defmodule ValidatorTest do
       |> Repo.delete_all
 
       valid_permission_group = %PermissionGroup{name: "myPermissionGroup"}
-      {:ok, _permission_group} = GenServer.call(PermissionGroupService, {:insert, valid_permission_group})
-      permission = %Permission{permission_tag: "test_tag", permission_group: valid_permission_group}
-      {:ok, _insert_permission} = GenServer.call(PermissionService, {:insert, permission})
-      permission2 = %Permission{permission_tag: "test_tag2", permission_group: valid_permission_group}
-      {:ok, _insert_permission2} = GenServer.call(PermissionService, {:insert, permission2})
+      {:ok, permission_group} = GenServer.call(PermissionGroupService, {:insert, valid_permission_group})
+      permission = %Permission{permission_tag: "test_tag", permission_group: permission_group}
+      {:ok, insert_permission} = GenServer.call(PermissionService, {:insert, permission})
+      permission2 = %Permission{permission_tag: "test_tag2", permission_group: permission_group}
+      {:ok, insert_permission2} = GenServer.call(PermissionService, {:insert, permission2})
       user = %User{name: Faker.Name.first_name, password: "fdsafdsa", email: "#{Faker.Name.first_name}.#{Faker.Name.last_name}@fdsa"}
       {:ok, inserted_user} = GenServer.call(UserService, {:insert, user})
       {:ok, loaded_user} = GenServer.call(UserService, {:get, inserted_user.id})
-      {:ok, user} = GenServer.call(UserService, {:set_permissions, loaded_user, [permission, permission2]})
+      {:ok, user} = GenServer.call(UserService, {:set_permissions, loaded_user, [insert_permission, insert_permission2]})
       alias AuthenticationService.Authenticator
       alias ServiceObjects.AuthenticateRequest
       {:ok, authenticate_response} = GenServer.call(Authenticator, {:authenticate_request, %AuthenticateRequest{username: user.name, password: user.password, token_request_type: "api"}})

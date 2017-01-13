@@ -37,9 +37,9 @@ defmodule AuthorizationService.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [        {:dataservice, in_umbrella: true},
-             {:service_objects, in_umbrella: true},
-             {:guardian, "~> 0.14"},
-             {:authentication_service, in_umbrella: true, only: [:dev, :test]}]
+    [{:dataservice, in_umbrella: true},
+    {:service_objects, in_umbrella: true},
+     {:guardian, "~> 0.14"},
+      {:authentication_service, in_umbrella: true, only: [:dev, :test]}]
   end
 end

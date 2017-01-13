@@ -37,9 +37,10 @@ defmodule UserManager.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [             {:dataservice, in_umbrella: true},
+    [{:dataservice, in_umbrella: true},
                   {:service_objects, in_umbrella: true},
                   {:authentication_service, in_umbrella: true},
-                  {:authorization_service, in_umbrella: true}]
+                  {:authorization_service, in_umbrella: true},
+                  {:registration_service, in_umbrella: true}]
   end
 end

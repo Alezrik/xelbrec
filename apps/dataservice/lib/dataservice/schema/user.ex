@@ -19,6 +19,8 @@ defmodule Dataservice.Schema.User do
         |> validate_length(:name, min: 2, max: 50)
         |> validate_length(:password, min: 6, max: 50)
         |> validate_length(:email, min: 3, max: 50)
+        |> unique_constraint(:name)
+        |> unique_constraint(:email)
       end
 
 

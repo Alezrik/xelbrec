@@ -15,5 +15,6 @@ defmodule Dataservice.Schema.PermissionGroup do
     |> cast_assoc(:permissions)
     |> validate_required([:name])
     |> validate_length(:name, min: 3, max: 20)
+    |> unique_constraint(:name)
   end
 end

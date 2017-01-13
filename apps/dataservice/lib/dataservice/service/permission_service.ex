@@ -13,17 +13,30 @@ defmodule Dataservice.Service.PermissionService do
   def init(_opts) do
     {:ok, %{}}
   end
+  def handle_call({:refresh_assocs, permission}, _from, state) do
+    p = permission
+    |> Repo.preload(:permission_group)
+    |> Repo.preload(:users)
+    {:reply, {:ok, p}, state}
+  end
   def handle_call({:insert, item}, _from, state) do
     import Ecto.Changeset
     Logger.debug "checking permission group: #{inspect item.permission_group}"
     alias Dataservice.Schema.PermissionGroup
-    group = PermissionGroup.changeset(item.permission_group, %{})
-    change_set = Permission.changeset(%Permission{}, %{ permission_tag: item.permission_tag})
-    |> put_assoc(:permission_group, group)
-    |> put_assoc(:users, [])
-    Logger.debug "create changeset: #{inspect change_set}"
+    refresh_perm_group = PermissionGroup
+    |> where(name: ^item.permission_group.name)
+    |> Repo.one!
+    |> Repo.preload(:permissions)
+    #group = PermissionGroup.changeset(item.permission_group, %{})
+    change_set = Permission.changeset(%Permission{}, %{permission_tag: item.permission_tag,})
+    insert_perm = change_set |> Repo.insert! |> Repo.preload(:permission_group) |> Repo.preload(:users)
+    update_change = insert_perm |> Permission.changeset(%{})
+      |> put_assoc(:permission_group, refresh_perm_group)
+#    |> put_assoc(:permission_group, [p])
+#    |> put_assoc(:users, [])
+    Logger.debug "create changeset: #{inspect update_change}"
     case change_set.valid? do
-      true -> {:reply, Repo.insert(change_set), state}
+      true -> {:reply, Repo.update(update_change), state}
       false -> {:reply, {:error, change_set.errors}, state}
     end
   end
@@ -51,7 +64,9 @@ defmodule Dataservice.Service.PermissionService do
     refresh_item = item
     |> Repo.preload(:permission_group)
     |> Repo.preload(:users)
-    change_set = Permission.changeset(refresh_item, changemap) |> put_assoc(:users, refresh_item.users) |> put_assoc(:permission_group, refresh_item.permission_group)
+    change_set = refresh_item |> Permission.changeset(changemap)
+      |> put_assoc(:users, refresh_item.users)
+      |> put_assoc(:permission_group, refresh_item.permission_group)
     case change_set.valid? do
       true ->
         {:reply, Repo.update(change_set), state}

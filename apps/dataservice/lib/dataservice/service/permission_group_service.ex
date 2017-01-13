@@ -15,12 +15,18 @@ defmodule Dataservice.Service.PermissionGroupService do
     end
     def handle_call({:insert, permission_group}, _from, state) do
         import Ecto.Changeset
-        insert_changeset = PermissionGroup.changeset(%PermissionGroup{}, %{name: permission_group.name}) |> put_assoc(:permissions, [])
+        insert_changeset = %PermissionGroup{} |> PermissionGroup.changeset(%{name: permission_group.name}) |> put_assoc(:permissions, [])
         case insert_changeset.valid? do
            true -> {:reply, Repo.insert(insert_changeset), state}
            false -> {:reply, {:error, insert_changeset.errors}, state}
         end
 
+    end
+    def handle_call({:get_by_name, name}, _from, state) do
+      result = PermissionGroup
+      |> Repo.all
+      |> Repo.preload(:permissions)
+      {:reply, {:ok, result}, state}
     end
     def handle_call({:get, attr}, _from, state) do
       result = case attr do

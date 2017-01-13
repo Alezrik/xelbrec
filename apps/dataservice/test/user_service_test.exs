@@ -31,14 +31,14 @@ defmodule UserServiceTest do
     alias Dataservice.Service.PermissionService
 
     valid_permission_group = %PermissionGroup{name: "myPermissionGroup"}
-    {:ok, _permission_group} = GenServer.call(PermissionGroupService, {:insert, valid_permission_group})
+    {:ok, permission_group} = GenServer.call(PermissionGroupService, {:insert, valid_permission_group})
 
-    permission = %Permission{permission_tag: "test_tag", permission_group: valid_permission_group}
+    permission = %Permission{permission_tag: "test_tag", permission_group: permission_group}
     {:ok, insert_permission} = GenServer.call(PermissionService, {:insert, permission})
 
     {:ok, _user_with_permissions} = GenServer.call(UserService, {:add_permission, newupdateduser, insert_permission})
 
-    permission2 = %Permission{permission_tag: "test_tag2", permission_group: valid_permission_group}
+    permission2 = %Permission{permission_tag: "test_tag2", permission_group: permission_group}
     {:ok, insert_permission2} = GenServer.call(PermissionService, {:insert, permission2})
     {:ok, _user_with_permissions2} = GenServer.call(UserService, {:add_permission, newupdateduser, insert_permission2})
     {:ok, check_get_user} = GenServer.call(UserService, {:get, getuser.id})
